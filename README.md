@@ -10,7 +10,7 @@ Interactive sales dashboard built with **Python + Streamlit** to analyze revenue
 **Trend** — daily orders, 7-day moving average and KPIs
 ![Trend tab](docs/tab2-tendencia.png)
 
-**Products** — top products by sales and price vs. quantity
+**Products** — top products by sales
 ![Products tab](docs/tab3-productos.png)
 
 ## What it shows
