@@ -67,7 +67,7 @@ def estilo_limpio(ax: plt.Axes) -> None:
 # =============================================================================
 # 3. CARGA DE DATOS
 # =============================================================================
-df = cargar_datos("ventas_limpias.csv")
+df = cargar_datos("docs/ventas_limpias.csv")
 
 with st.expander("Ver base de datos"):
     st.dataframe(df, use_container_width=True)
