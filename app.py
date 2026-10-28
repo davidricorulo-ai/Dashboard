@@ -4,10 +4,14 @@ Dashboard Tienda Electrónica
 App de Streamlit que lee `ventas_limpias.csv` y muestra:
   - Tab 1 · Resumen Financiero: ingresos por categoría (barras) y su distribución (%).
   - Tab 2 · Tendencia: pedidos por día con promedio móvil de 7 días y KPIs.
-  - Tab 3 · Productos: top 10 productos por ventas.
+  - Tab 3 · Productos: top productos por ventas y relación precio vs cantidad.
+
+El CSV puede estar en la misma carpeta que app.py o dentro de `docs/`.
 
 Ejecutar con:  streamlit run app.py
 """
+
+from pathlib import Path
 
 import streamlit as st
 import pandas as pd
@@ -37,12 +41,28 @@ COLOR_PRINCIPAL = "#2E5AAC"
 COLOR_SECUNDARIO = "#E07A1F"
 COLOR_TEXTO = "#555555"
 
+# Cuántos productos mostrar en el ranking de la Tab 3
+TOP_N = 3
+
+# Carpeta donde está este archivo. Así el CSV se encuentra igual en
+# VS Code, en la terminal o en Streamlit Cloud, sin importar desde dónde se ejecute.
+CARPETA_APP = Path(__file__).parent
+
 
 # =============================================================================
 # 2. FUNCIONES AUXILIARES
 # =============================================================================
+def buscar_csv(nombre: str) -> Path:
+    """Busca el CSV junto a app.py o dentro de docs/ y regresa la ruta encontrada."""
+    for ruta in (CARPETA_APP / nombre, CARPETA_APP / "docs" / nombre):
+        if ruta.exists():
+            return ruta
+    st.error(f"No se encontró '{nombre}'. Colócalo junto a app.py o dentro de la carpeta docs/.")
+    st.stop()  # detiene la app con un mensaje claro en lugar de un error largo
+
+
 @st.cache_data
-def cargar_datos(ruta: str) -> pd.DataFrame:
+def cargar_datos(ruta: Path) -> pd.DataFrame:
     """Lee el CSV, convierte 'Fecha' a datetime y agrega la semana ISO.
 
     Se cachea para que el CSV no se vuelva a leer en cada interacción.
@@ -67,7 +87,7 @@ def estilo_limpio(ax: plt.Axes) -> None:
 # =============================================================================
 # 3. CARGA DE DATOS
 # =============================================================================
-df = cargar_datos("docs/ventas_limpias.csv")
+df = cargar_datos(buscar_csv("ventas_limpias.csv"))
 
 with st.expander("Ver base de datos"):
     st.dataframe(df, use_container_width=True)
@@ -226,15 +246,45 @@ with tab2:
 # TAB 3 · PRODUCTOS
 # -----------------------------------------------------------------------------
 with tab3:
-    # Ventas totales por producto -> Top 10 de mayor a menor
+    # Ventas totales por producto -> Top N de mayor a menor
     top_productos = (
         df.groupby("Producto")["Subtotal"].sum()
           .reset_index()
           .sort_values(by="Subtotal", ascending=False)
-          .head(3)
+          .head(TOP_N)
     )
 
-        # --- Gráfica de dispersión: Precio vs Cantidad vendida ---
+    # --- Gráfica de barras horizontales: top productos ---
+    st.subheader(f"Top {TOP_N} productos por ventas")
+
+    # En Streamlit hay que crear la figura (fig, ax) y pasarla a st.pyplot()
+    fig_prod, ax_prod = plt.subplots(figsize=(10, 1 + 0.6 * TOP_N))
+    sns.barplot(
+        data=top_productos, x="Subtotal", y="Producto",
+        color=COLOR_PRINCIPAL, ax=ax_prod,
+    )
+
+    # Monto al final de cada barra
+    ax_prod.bar_label(ax_prod.containers[0], fmt="${:,.0f}",
+                      padding=4, fontsize=8, color=COLOR_TEXTO)
+
+    ax_prod.set_xlabel("Ventas", color=COLOR_TEXTO)
+    ax_prod.set_ylabel("")
+    ax_prod.xaxis.set_major_formatter(lambda x, _: f"${x:,.0f}")
+    ax_prod.set_xlim(right=top_productos["Subtotal"].max() * 1.15)  # espacio para etiquetas
+    estilo_limpio(ax_prod)
+    # En barras horizontales la cuadrícula útil es la vertical
+    ax_prod.grid(axis="y", visible=False)
+    ax_prod.grid(axis="x", color="#EEEEEE", linewidth=0.8)
+
+    fig_prod.tight_layout()
+    st.pyplot(fig_prod, use_container_width=True)
+    plt.close(fig_prod)
+
+    st.divider()
+
+    # --- Gráfica de dispersión: Precio vs Cantidad vendida ---
+    # Cada punto es una línea de venta; el color indica la categoría.
     st.subheader("Relación: precio vs cantidad vendida")
 
     fig_disp, ax_disp = plt.subplots(figsize=(10, 5))
@@ -256,7 +306,7 @@ with tab3:
     ax_disp.xaxis.set_major_formatter(lambda x, _: f"${x:,.0f}")
     ax_disp.yaxis.set_major_locator(MaxNLocator(integer=True))  # unidades enteras
     estilo_limpio(ax_disp)
-    ax_disp.grid(axis="x", color="#EEEEEE", linewidth=0.8)
+    ax_disp.grid(axis="x", color="#EEEEEE", linewidth=0.8)      # grid en ambos ejes
 
     # Leyenda fuera de la gráfica, a la derecha
     ax_disp.legend(title="Categoría", bbox_to_anchor=(1.02, 1), loc="upper left",
