@@ -2,7 +2,16 @@
 
 Interactive sales dashboard built with **Python + Streamlit** to analyze revenue, order trends and top products for an electronics store.
 
-![Dashboard preview](docs/screenshot.png)
+## Preview
+
+**Financial Summary** — revenue by category and revenue share
+![Financial Summary tab](docs/tab1-resumen.png)
+
+**Trend** — daily orders, 7-day moving average and KPIs
+![Trend tab](docs/tab2-tendencia.png)
+
+**Products** — top products by sales and price vs. quantity
+![Products tab](docs/tab3-productos.png)
 
 ## What it shows
 
@@ -10,7 +19,7 @@ Interactive sales dashboard built with **Python + Streamlit** to analyze revenue
 |---|---|---|
 | **Financial Summary** | Revenue by category (bar) + revenue share (donut) | Which categories drive the business? |
 | **Trend** | Daily orders with 7-day moving average, peak-day annotation and KPI cards | How is order volume evolving? |
-| **Products** | Top N products by sales (horizontal bar) | Which products should we prioritize? |
+| **Products** | Top 3 products by sales (horizontal bar) + price vs. quantity scatter by category | Which products should we prioritize, and how does price relate to volume? |
 
 ## Highlights
 
@@ -26,29 +35,32 @@ Python · pandas · matplotlib · seaborn · Streamlit
 ## Run it locally
 
 ```bash
-git clone https://github.com/davidricorulo-ai/Dashboard.git y cd Dashboard
-cd dashboard-tienda-electronica
+git clone https://github.com/davidricorulo-ai/Dashboard.git
+cd Dashboard
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
 ## Data
 
-`ventas_limpias.csv` contains the cleaned sales dataset (one row per order line) with the columns:
-`ID_Pedido`, `Fecha`, `Categoria`, `Producto`, `Subtotal`.
+`docs/ventas_limpias.csv` contains the cleaned sales dataset (one row per order line) with the columns:
+`ID_Pedido`, `Fecha`, `Producto`, `Categoria`, `Precio`, `Cantidad`, `Subtotal`.
 
 The raw data was cleaned beforehand in Google Colab (pandas).
 
 ## Project structure
 
 ```
-├── app.py                 # Streamlit app
-├── ventas_limpias.csv     # Cleaned dataset
+├── app.py                     # Streamlit app
 ├── requirements.txt
 └── docs/
-    └── screenshot.png     # Preview used in this README
+    ├── ventas_limpias.csv     # Cleaned dataset
+    ├── tab1-resumen.png       # Screenshots used in this README
+    ├── tab2-tendencia.png
+    └── tab3-productos.png
 ```
 
 ---
 
 **Author:** David Rico · Business Analyst — Finance Operations & Automation
+
