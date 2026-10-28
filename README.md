@@ -43,7 +43,7 @@ streamlit run app.py
 
 ## Data
 
-`docs/ventas_limpias.csv` contains the cleaned sales dataset (one row per order line) with the columns:
+`docs/ventas_limpias.csv` contains the clean sales dataset (one row per order line) with the columns:
 `ID_Pedido`, `Fecha`, `Producto`, `Categoria`, `Precio`, `Cantidad`, `Subtotal`.
 
 The raw data was cleaned beforehand in Google Colab (pandas).
