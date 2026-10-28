@@ -231,33 +231,37 @@ with tab3:
         df.groupby("Producto")["Subtotal"].sum()
           .reset_index()
           .sort_values(by="Subtotal", ascending=False)
-          .head(10)
+          .head(3)
     )
 
-    st.subheader("Top 10 productos por ventas")
+        # --- Gráfica de dispersión: Precio vs Cantidad vendida ---
+    st.subheader("Relación: precio vs cantidad vendida")
 
-    # En Colab, plt dibuja solo; en Streamlit hay que crear la figura
-    # explícitamente (fig, ax) y pasarla a st.pyplot()
-    fig_prod, ax_prod = plt.subplots(figsize=(10, 5))
-    sns.barplot(
-        data=top_productos, x="Subtotal", y="Producto",
-        color=COLOR_PRINCIPAL, ax=ax_prod,
+    fig_disp, ax_disp = plt.subplots(figsize=(10, 5))
+    sns.scatterplot(
+        data=df,
+        x="Precio",
+        y="Cantidad",
+        hue="Categoria",    # colorea los puntos según su categoría
+        palette="Set2",
+        s=90,               # tamaño de los puntos
+        alpha=0.7,          # transparencia (1 = sólido, 0 = invisible)
+        edgecolor="white",
+        linewidth=0.5,
+        ax=ax_disp,
     )
 
-    # Etiqueta con el monto al final de cada barra
-    ax_prod.bar_label(ax_prod.containers[0], fmt="${:,.0f}",
-                      padding=4, fontsize=8, color=COLOR_TEXTO)
+    ax_disp.set_xlabel("Precio del producto", color=COLOR_TEXTO)
+    ax_disp.set_ylabel("Unidades vendidas", color=COLOR_TEXTO)
+    ax_disp.xaxis.set_major_formatter(lambda x, _: f"${x:,.0f}")
+    ax_disp.yaxis.set_major_locator(MaxNLocator(integer=True))  # unidades enteras
+    estilo_limpio(ax_disp)
+    ax_disp.grid(axis="x", color="#EEEEEE", linewidth=0.8)
 
-    ax_prod.set_xlabel("Ventas", color=COLOR_TEXTO)
-    ax_prod.set_ylabel("")
-    ax_prod.xaxis.set_major_formatter(lambda x, _: f"${x:,.0f}")
-    estilo_limpio(ax_prod)
-    # En barras horizontales la cuadrícula útil es la vertical
-    ax_prod.grid(axis="y", visible=False)
-    ax_prod.grid(axis="x", color="#EEEEEE", linewidth=0.8)
+    # Leyenda fuera de la gráfica, a la derecha
+    ax_disp.legend(title="Categoría", bbox_to_anchor=(1.02, 1), loc="upper left",
+                   frameon=False, fontsize=8, title_fontsize=9)
 
-    fig_prod.tight_layout()
-    st.pyplot(fig_prod, use_container_width=True)
-    plt.close(fig_prod)
-
-    st.divider()
+    fig_disp.tight_layout()
+    st.pyplot(fig_disp, use_container_width=True)
+    plt.close(fig_disp)
