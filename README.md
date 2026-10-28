@@ -26,7 +26,7 @@ Python · pandas · matplotlib · seaborn · Streamlit
 ## Run it locally
 
 ```bash
-git clone https://github.com/<your-user>/dashboard-tienda-electronica.git
+git clone https://github.com/davidricorulo-ai/Dashboard.git y cd Dashboard
 cd dashboard-tienda-electronica
 pip install -r requirements.txt
 streamlit run app.py
