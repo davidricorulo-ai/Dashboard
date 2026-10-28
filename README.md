@@ -10,7 +10,7 @@ Interactive sales dashboard built with **Python + Streamlit** to analyze revenue
 |---|---|---|
 | **Financial Summary** | Revenue by category (bar) + revenue share (donut) | Which categories drive the business? |
 | **Trend** | Daily orders with 7-day moving average, peak-day annotation and KPI cards | How is order volume evolving? |
-| **Products** | Top 3 products by sales (horizontal bar) | Which products should we prioritize? |
+| **Products** | Top N products by sales (horizontal bar) | Which products should we prioritize? |
 
 ## Highlights
 
